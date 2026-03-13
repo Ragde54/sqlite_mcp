@@ -21,5 +21,3 @@ class Database:
 
             except sqlite3.DatabaseError as e:
                 return {"error": str(e), "columns": [], "rows": []}
-        
-        

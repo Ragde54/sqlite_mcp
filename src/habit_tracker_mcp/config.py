@@ -7,7 +7,9 @@ class Settings(BaseSettings):
 
     database_path: str = Field(default="data/dev.db", validation_alias="DATABASE_PATH")
     read_only: bool = Field(default=False, validation_alias="READ_ONLY")
-    server_name: str = Field(default="sqlite-mcp", validation_alias="SERVER_NAME")
+    server_name: str = Field(
+        default="habit-tracker-mcp", validation_alias="SERVER_NAME"
+    )
 
 
 settings = Settings()
