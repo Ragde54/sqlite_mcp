@@ -1,12 +1,26 @@
-from mcp.server.fastmcp import FastMCP
-from .database import Database
-from .config import settings
+from typing import Any
 
-server = FastMCP(settings.server_name)
-db = Database(settings.database_path)
+from mcp.server.fastmcp import FastMCP
+from sqlalchemy import text
+
+from .database import engine
+
+server = FastMCP("habit-tracker-mcp")
 
 
 @server.tool()
-async def run_query(sql: str) -> dict:
+def run_query(sql: str) -> dict[str, Any]:
     """Execute a SQL query against the database."""
-    return await db.run_query(sql)
+    with engine.connect() as conn:
+        try:
+            result = conn.execute(text(sql))
+            conn.commit()
+
+            if result.returns_rows:
+                columns = list(result.keys())
+                rows = [list(row) for row in result.fetchall()]
+                return {"columns": columns, "rows": rows}
+            else:
+                return {"columns": [], "rows": [], "rowcount": result.rowcount}
+        except Exception as e:
+            return {"error": str(e), "columns": [], "rows": []}

@@ -1,23 +1,22 @@
-import sqlite3
-import aiosqlite
+from typing import Any
+
+from sqlalchemy import create_engine, event
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
+
+from habit_tracker_mcp.config import settings
+
+engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})
 
 
-class Database:
-    def __init__(self, db_path: str):
-        self.db_path = db_path
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection: Any, connection_record: Any) -> None:
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
 
-    async def run_query(self, sql: str) -> dict:
-        async with aiosqlite.connect(self.db_path) as db:
-            try:
-                cursor = await db.execute(sql)
-                await db.commit()
 
-                if cursor.description is not None:
-                    columns = [desc[0] for desc in cursor.description]
-                    rows = await cursor.fetchall()
-                    return {"columns": columns, "rows": [list(r) for r in rows]}
-                else:
-                    return {"columns": [], "rows": [], "rowcount": cursor.rowcount}
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-            except sqlite3.DatabaseError as e:
-                return {"error": str(e), "columns": [], "rows": []}
+
+class Base(DeclarativeBase):
+    pass

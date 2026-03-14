@@ -5,8 +5,39 @@ build/
 dist/
 wheels/
 *.egg-info
+*.egg
+
+# Secrets and environment variables
 .env
-data/*.db
+.env.*
+!.env.example
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
 
 # Virtual environments
 .venv
+venv/
+ENV/
+
+# Testing and Code Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Tool caches
+.mypy_cache/
+.ruff_cache/
+.pre-commit-config.yaml.tmp

@@ -10,9 +10,8 @@ repos:
     rev: v1.19.1
     hooks:
       - id: mypy
-        additional_dependencies:
-          - sqlalchemy[mypy]
-          - pydantic
+        additional_dependencies: ["pydantic", "pydantic-settings", "sqlalchemy", "mcp"]
+
         args: [--ignore-missing-imports]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
