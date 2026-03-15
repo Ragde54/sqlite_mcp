@@ -15,3 +15,6 @@ check: lint typecheck test
 
 seed:
 	uv run python scripts/seed.py
+
+run:
+	uv run python -m habit_tracker_mcp.server

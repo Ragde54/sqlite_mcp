@@ -51,7 +51,6 @@ class HabitCompletion(Base):
     __table_args__ = (
         CheckConstraint("source IN ('manual', 'todo')", name="ck_habit_completions_source"),
     )
-
     habit: Mapped[Habit] = relationship("Habit", back_populates="completions")
 
 

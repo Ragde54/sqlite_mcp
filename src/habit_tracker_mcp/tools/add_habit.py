@@ -1,0 +1,52 @@
+from typing import Any
+
+from mcp.types import TextContent, Tool
+from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
+
+from habit_tracker_mcp.database import engine
+from habit_tracker_mcp.models.inputs import AddHabitInput
+
+tool_definition = Tool(
+    name="add_habit",
+    description="Add a new habit to track.",
+    inputSchema={
+        "type": "object",
+        "properties": {
+            "name": {"type": "string"},
+            "frequency_type": {"type": "string", "enum": ["daily", "weekly", "monthly"]},
+            "frequency_target": {"type": "integer", "default": 1},
+            "description": {"type": "string"},
+            "category_id": {"type": "integer"},
+        },
+        "required": ["name", "frequency_type"],
+    },
+)
+
+
+def run(arguments: dict[str, Any]) -> list[TextContent]:
+    """Add a new habit."""
+    params = AddHabitInput(**arguments)
+
+    try:
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("""
+                INSERT INTO habits (name, description, frequency_type, frequency_target)
+                VALUES (:name, :description, :frequency_type, :frequency_target)
+            """),
+                {
+                    "name": params.name,
+                    "description": params.description,
+                    "frequency_type": params.frequency_type,
+                    "frequency_target": params.frequency_target,
+                },
+            )
+            return [
+                TextContent(
+                    type="text", text=f"Habit '{params.name}' added with id {result.lastrowid}"
+                )
+            ]
+
+    except SQLAlchemyError as e:
+        raise ValueError(f"Failed to add habit: {e}") from e
