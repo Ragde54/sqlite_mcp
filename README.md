@@ -87,7 +87,7 @@ make inspect
 
 | Name | Argument | Description |
 |---|---|---|
-| `sql-assistant` | `focus` (optional) | Primes Claude with full schema knowledge before writing queries |
+| `sql-assistant` | `focus` (optional) | Primes the client with full schema knowledge before writing queries |
 
 ## Tool access policy
 
