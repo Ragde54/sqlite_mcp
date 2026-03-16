@@ -2,7 +2,7 @@ install:
 	uv sync --group dev
 
 test:
-	uv run pytest tests/ --cov=src --cov-report=term-missing
+	uv run pytest tests/ --cov=src --cov-report=term-missing --cov-fail-under=80
 
 test-fast:
 	uv run pytest tests/ -x
@@ -42,3 +42,9 @@ docker-logs:
 
 inspect-docker:
 	npx @modelcontextprotocol/inspector docker-compose run --rm -T habit-tracker-mcp
+
+ci:
+	make lint
+	make typecheck
+	make test
+	docker build -f docker/Dockerfile -t habit-tracker-mcp .
