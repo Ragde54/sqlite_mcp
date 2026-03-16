@@ -1,18 +1,20 @@
 # ---- Stage 1: builder ----
-FROM python:3.12-slim AS builder
+FROM ghcr.io/astral-sh/uv:python3.12-slim AS builder
 
 WORKDIR /app
 
+# Enable bytecode compilation and set venv path
+ENV UV_COMPILE_BYTECODE=1
 ENV VIRTUAL_ENV=/app/.venv
-ENV PATH="/app/.venv/bin:$PATH"
 
-RUN pip install uv
+# Copy project files
+COPY pyproject.toml uv.lock README.md ./
 
-COPY pyproject.toml uv.lock ./
+# Copy source code
 COPY src/ ./src/
 
-RUN uv venv $VIRTUAL_ENV && \
-    uv sync --no-dev --frozen
+# Install dependencies and the project
+RUN uv sync --frozen --no-dev --no-editable
 
 # ---- Stage 2: final ----
 FROM python:3.12-slim AS final
