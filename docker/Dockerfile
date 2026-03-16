@@ -1,7 +1,11 @@
 # ---- Stage 1: builder ----
-FROM ghcr.io/astral-sh/uv:python3.12-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
+
+# Install uv manually to avoid registry issues
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uv/uv
+ENV PATH="/uv:${PATH}"
 
 # Enable bytecode compilation and set venv path
 ENV UV_COMPILE_BYTECODE=1
